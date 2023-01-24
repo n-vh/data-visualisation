@@ -1,7 +1,7 @@
 import { ChartConfiguration, ChartDataset, ChartOptions } from 'chart.js';
 import Chart from 'chart.js/auto';
 import { createStore } from './store';
-import { TargetType } from './types';
+import { FetchData, TargetType } from './types';
 
 const chartOptions: ChartOptions = {
   animation: {
