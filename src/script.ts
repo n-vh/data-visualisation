@@ -103,4 +103,76 @@ function insertCrimesChart() {
   });
 }
 
+function insertHomicidesChart() {
+  const { target, insertChart } = getTarget('#table2');
+  const headers = target.querySelectorAll('thead th');
+  const cells = target.querySelectorAll('tbody td');
+
+  const defaultValues = {
+    labels: [] as string[],
+    datasets: [] as ChartDataset[],
+  };
+
+  const store = createStore(defaultValues, (store) => ({
+    addYear: (year: string) =>
+      store.update((values) => {
+        values.datasets.push({
+          label: year,
+          data: [],
+          categoryPercentage: 0.5,
+          barThickness: 8,
+          minBarLength: 10,
+        });
+        return values;
+      }),
+    addCountry: (country: string) =>
+      store.update((values) => {
+        values.labels.push(country);
+        return values;
+      }),
+    addCountryData: (index: number, value: number) =>
+      store.update((values) => {
+        values.datasets[index].data.push(value);
+        return values;
+      }),
+  }));
+
+  for (let i = 0; i < headers.length; i++) {
+    const headerIndex = i % 4;
+    const header = headers[i];
+
+    switch (headerIndex) {
+      case 2:
+      case 3:
+        store.addYear(header.textContent!);
+    }
+  }
+
+  for (let i = 0; i < cells.length; i++) {
+    const columnIndex = i % 3;
+    const cell = cells[i];
+
+    switch (columnIndex) {
+      case 0:
+        store.addCountry(cell.textContent!);
+        continue;
+      case 1:
+      case 2:
+        const number = cell.textContent!;
+        store.addCountryData(columnIndex - 1, Number(number));
+    }
+  }
+
+  const { labels, datasets } = store.get();
+
+  insertChart('beforebegin', {
+    type: 'bar',
+    data: {
+      labels,
+      datasets,
+    },
+    options: chartOptions,
+  });
+}
 insertCrimesChart();
+insertHomicidesChart();
